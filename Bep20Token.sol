@@ -1,10 +1,10 @@
-pragma solidity ^0.6.0;
-
-contract Bep20Token{
+pragma solidity >=0.4.21 <0.9.0;
+//address 0x78264A753fd91aFE7cF206e7e53503BCF315Dfcf
+contract Bep20Token {
     string  public name = "BinanceToken";                      // Set the name for display purposes
-    string  public symbol = "BEP20";                             // Set the symbol for display purposes
-    uint256 public totalSupply_ = 1000000000000000000000000;    
-    uint8   public decimals = 18;                               
+    string  public symbol = "Bep20";                             // Set the symbol for display purposes
+    uint256 public totalSupply_ = 1000000000000000000000000;    // Give the creator all initial tokens (100000 for example)
+    uint8   public decimals = 18;                                // Amount of decimals for display purposes
 
     event Transfer(
         address indexed _from,
@@ -24,21 +24,16 @@ contract Bep20Token{
     constructor() public {
         balances[msg.sender] = totalSupply_;
     }
-    
     // @return total amount of tokens
-    
     function totalSupply() public view returns (uint256) {
         return totalSupply_;
     }
-    
-    // @param address_owner The address from which the balance will be retrieved
+    // @param _owner The address from which the balance will be retrieved
     // @return The balance
     function balanceOf(address _owner) public view returns (uint256) {
         return balances[_owner];
     }
-    
-    
-    
+
     // @notice send `_value` token to `_to` from `msg.sender`
     // @param _to The address of the recipient
     // @param _value The amount of token to be transferred
@@ -50,7 +45,7 @@ contract Bep20Token{
         emit Transfer(msg.sender, _to, _value);
         return true;
     }
-    
+
     // @notice `msg.sender` approves `_addr` to spend `_value` tokens
     // @param _spender The address of the account able to transfer the tokens
     // @param _value The amount of wei to be approved for transfer
@@ -60,7 +55,7 @@ contract Bep20Token{
         emit Approval(msg.sender, _spender, _value);
         return true;
     }
-    
+
     // @notice send `_value` token to `_to` from `_from` on the condition it is approved by `_from`
     // @param _from The address of the sender
     // @param _to The address of the recipient
@@ -75,6 +70,7 @@ contract Bep20Token{
         emit Transfer(_from, _to, _value);
         return true;
     }
+
     // @param _owner The address of the account owning tokens
     // @param _spender The address of the account able to transfer the tokens
     // @return Amount of remaining tokens allowed to spent

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .header {
+            font-family: sans-serif;
+            text-align: center;
+        }
+    </style>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title id ="header">
+    </title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <script src='https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js'></script>
+    <script src="Bep20Token.js" type="text/javascript"></script>
+    <script src="HighFlyerToken.js" type="text/javascript"></script>
+    <script src="HighFlyerTokenFarm.js" type="text/javascript"></script>
+    <script src="HighFlyerTokenFarm.json" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container-fluid m-4">
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <img src="" class="rounded mr-2" alt="">
+                <strong class="mr-auto">Bootstrap</strong>
+                <small>11 mins ago</small>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                Hello, world! This is a toast message.
+            </div>
+        </div>
+
+        <div class="card container w-50">
+            <div class="card-body">
+                <div class="row justify-content-center my-4">
+                    <div class="col">
+                        <strong>Staking Balance <span id="stake-balance"></span></strong>
+                    </div>
+                    <div class="col">
+                        <strong>Reward Balance <span id="reward-balance"></span></strong>
+                    </div>
+                </div>
+
+                <h2 class="mb-4">High Flyer</h2>
+                <p id="transactions" class="primary"></p>
+<!--                <h2 id="dapp-info"></h2><br>-->
+<!--                <button class="btn btn-primary" onclick="getTweets();">Get All Transactions</button>-->
+
+                <!--   Stake Input-->
+                <div class="my-4">
+                    <input type="text" id="amount" class="form-control mb-3" placeholder="Stake Amount" aria-label="Stake Amount" aria-describedby="stake">
+                    <button
+                            class="btn btn-primary btn-block mb-3"
+                            type="button" id="stake"
+                            onclick="stakeToken();">Stake</button>
+                    <button
+                            class="btn btn-outline-primary btn-block mb-3"
+                            type="button" id="unstake"
+                            onclick="unstakeToken();">Unstake</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        console.log(HighFlyerTokenFarm, 'HighFlyerTokenFarm')
+        // web3.eth.defaultAccount = window.web3.eth.getAccounts()[0];
+
+        async function loadWeb3() {
+            if (window.ethereum) {
+                window.web3 = new Web3(window.ethereum);
+                window.ethereum.enable();
+            }
+        }
+
+        async function loadContract() {
+            var abi = HighFlyerTokenFarm.abi;
+
+            //set contract address
+            var contractAddress = '0x51Dec7fe6df34cF6a476791389127B1DB7229021';
+            await new window.web3.eth.Contract(abi, contractAddress);
+        }
+
+        async function stakeToken() {
+            var amount = document.getElementById('amount').value
+            await window.contract.methods.stakeToken(amount).call();
+        }
+
+        async function unstakeToken(){
+            await window.contract.methods.unstakeToken().call();
+        }
+
+        async function stakeAmount(){
+            var account = getCurrentAccount();
+            await window.contract.methods.stakeAmount(account).call();
+        }
+
+        async function issueToken(){
+            await window.contract.methods.issueToken().call();
+        }
+
+        async function fetchTransactions() {
+            updateTransaction('Fetching All Transactions');
+            const transactions = await window.contract.methods.getTransactions().call();
+
+            updateTransaction(`Transactions: ${transactions}`);
+        }
+
+        async function getCurrentAccount() {
+            const accounts = await window.web3.eth.getAccounts();
+            return accounts[0];
+        }
+
+        async function load() {
+            await loadWeb3();
+            window.contract = await loadContract();
+            updateTransaction('Ready!');
+        }
+
+        function updateTransaction(transaction) {
+            const transactionEl = document.getElementById('transactions');
+            transactionEl.innerHTML = transaction;
+            console.log(transaction);
+        }
+
+        load();
+    </script>
+</body>
+</html>
