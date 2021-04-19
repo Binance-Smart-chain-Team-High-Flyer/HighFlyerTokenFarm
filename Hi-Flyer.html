@@ -71,67 +71,65 @@
     </div>
 
     <script type="text/javascript">
-        console.log(HighFlyerTokenFarm, 'HighFlyerTokenFarm')
-        // web3.eth.defaultAccount = window.web3.eth.getAccounts()[0];
+    
+    async function loadWeb3() {
+        window.web3 = new Web3;
+    }
 
-        async function loadWeb3() {
-            if (window.ethereum) {
-                window.web3 = new Web3(window.ethereum);
-                window.ethereum.enable();
-            }
-        }
+    async function loadContract() {
+        var abi = TokenFarmTHF.abi;
 
-        async function loadContract() {
-            var abi = HighFlyerTokenFarm.abi;
+        //set contract address
+        var contractAddress = '0x51Dec7fe6df34cF6a476791389127B1DB7229021';
+        return new web3.eth.Contract(abi, contractAddress);
+    }
 
-            //set contract address
-            var contractAddress = '0x51Dec7fe6df34cF6a476791389127B1DB7229021';
-            await new window.web3.eth.Contract(abi, contractAddress);
-        }
+    async function stakeToken() {
+        // await loadContract();
+        var amount = document.getElementById('amount').value
+        await window.contract.methods.stakeToken(amount).call();
+    }
 
-        async function stakeToken() {
-            var amount = document.getElementById('amount').value
-            await window.contract.methods.stakeToken(amount).call();
-        }
+    async function unstakeToken(){
+        await window.contract.methods.unstakeToken().call();
+    }
 
-        async function unstakeToken(){
-            await window.contract.methods.unstakeToken().call();
-        }
+    async function stakeAmount(){
+        var account = getCurrentAccount();
+        await window.contract.methods.stakeAmount(account).call();
+    }
 
-        async function stakeAmount(){
-            var account = getCurrentAccount();
-            await window.contract.methods.stakeAmount(account).call();
-        }
+    async function issueToken(){
+        await window.contract.methods.issueToken().call();
+    }
 
-        async function issueToken(){
-            await window.contract.methods.issueToken().call();
-        }
+    async function fetchTransactions() {
+        updateTransaction('Fetching All Transactions');
+        const transactions = await window.contract.methods.getTransactions().call();
 
-        async function fetchTransactions() {
-            updateTransaction('Fetching All Transactions');
-            const transactions = await window.contract.methods.getTransactions().call();
+        updateTransaction(`Transactions: ${transactions}`);
+    }
 
-            updateTransaction(`Transactions: ${transactions}`);
-        }
+    async function getCurrentAccount() {
+        const accounts = await window.web3.eth.getAccounts();
+        return accounts[0];
+    }
 
-        async function getCurrentAccount() {
-            const accounts = await window.web3.eth.getAccounts();
-            return accounts[0];
-        }
+    async function load() {
+        await loadWeb3();
+        window.contract = await loadContract();
+        contract.setProvider(web3.currentProvider);
+        //window.contract.options.from = '0x51Dec7fe6df34cF6a476791389127B1DB7229021';
+        updateTransaction('Ready!');
+    }
 
-        async function load() {
-            await loadWeb3();
-            window.contract = await loadContract();
-            updateTransaction('Ready!');
-        }
+    function updateTransaction(transaction) {
+        const transactionEl = document.getElementById('transactions');
+        transactionEl.innerHTML = transaction;
+        console.log(transaction);
+    }
 
-        function updateTransaction(transaction) {
-            const transactionEl = document.getElementById('transactions');
-            transactionEl.innerHTML = transaction;
-            console.log(transaction);
-        }
-
-        load();
+    load();
     </script>
 </body>
 </html>
